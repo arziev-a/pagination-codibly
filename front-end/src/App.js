@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import Modal from "./components/modal";
+import BasicModal  from "./components/modal";
 import { useHistory } from 'react-router-dom';
-
+import './App.css'
 function App() {
   const [products, setProducts] = useState([]);
   const [idFilter, setIdFilter] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [totalPages, setTotalPages] = useState(0);
+  const [modalOpen, setModalOpen] = useState(false)
   // handling the routing
   // const history = useHistory();
   // fetching the data 
@@ -57,10 +58,11 @@ function App() {
 
   const handleProductSelect = (product) => {
     setSelectedProduct(product);
+    setModalOpen(true)
   };
 
   const handleModalClose = () => {
-    setSelectedProduct(null);
+    setModalOpen(false)
   };
 
   const handleNextPage = () => {
@@ -70,10 +72,9 @@ function App() {
   const handlePreviousPage = () => {
     setCurrentPage(currentPage - 1);
   };
-  console.log(idFilter);
-  console.log(products.data);
+
   return (
-    <div>
+    <div className="App" style={{ textAlign: "center" }}>
       <input
         type="number"
         value={idFilter}
@@ -88,19 +89,23 @@ function App() {
             <th>Year</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody><>
           {products.data 
             ? products.data.map((product) => (
+              <>
               <tr
                 key={product.id}
-                style={{ backgroundColor: product.color }}
+                style={{ backgroundColor: product.color, border: "1px solid #ddd", cursor:'pointer'}}
                 onClick={() => handleProductSelect(product)}
               >
                 <td>{product.id}</td>
                 <td>{product.name}</td>
                 <td>{product.year}</td>
               </tr>
+              </>
             )) : "loading"}
+           
+            </>
         </tbody>
       </table>
       <div>
@@ -112,15 +117,12 @@ function App() {
         </button>
       </div>
       {selectedProduct && (
-        <Modal onClose={handleModalClose}>
-          <h1>{selectedProduct.name}</h1>
-          <div>
-            <p>ID: {selectedProduct.id}</p>
-            <p>Year: {selectedProduct.year}</p>
-            <p>Color: {selectedProduct.color}</p>
-            <p>Pantone value: {selectedProduct.pantone_value}</p>
-          </div>
-        </Modal>
+         <BasicModal 
+         handleProductSelect={handleProductSelect}
+         handleModalClose={handleModalClose}
+         modalOpen={modalOpen}
+         selectedProduct={selectedProduct}
+       />
       )}
     </div>
   );
